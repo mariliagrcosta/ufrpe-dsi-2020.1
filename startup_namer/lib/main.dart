@@ -91,8 +91,8 @@ class _RandomWordsState extends State<RandomWords> {
       ),
       // Add the heart icons after the text.
       trailing: Icon(
-        alreadySaved ? Icons.favorite : Icons.favorite_border,
-        color: alreadySaved ? Color(0xff99D3D0) : null,
+        alreadySaved ? Icons.favorite : Icons.favorite_border_rounded,
+        color: alreadySaved ? Color(0xff00B4D8) : null,
       ),
       onTap: () {
         //Calling setState() triggers a call to the build() method for the State object, resulting in an update to the UI.
