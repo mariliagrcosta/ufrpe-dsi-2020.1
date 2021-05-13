@@ -179,8 +179,17 @@ class _WordPairListPageState extends State<WordPairListPage> {
           child: _buildRow(context, index + 1, items.elementAt(index)),
           key: Key(items.toString()),
           background: Container(
-            color: Colors.red,
-          ),
+              color: Colors.red,
+              padding: EdgeInsets.all(16),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  Icon(
+                    Icons.delete,
+                    color: Colors.white,
+                  )
+                ],
+              )),
           direction: DismissDirection.startToEnd,
           onDismissed: (direction) {
             setState(() {
