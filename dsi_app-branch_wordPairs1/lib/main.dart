@@ -335,7 +335,6 @@ class _WordPairUpdatePageState extends State<WordPairUpdatePage> {
     setState(() {
       _formKey.currentState.save();
       _updateWordPair();
-      HomePage();
     });
     Navigator.pop(context, HomePage.routeName);
   }
