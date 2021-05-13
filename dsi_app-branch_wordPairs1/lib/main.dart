@@ -6,6 +6,9 @@ void main() {
   runApp(DSIApp());
 }
 
+List<DSIWordPair> wordPairs;
+List<DSIWordPair> searchList;
+
 void initWordPairs() {
   wordPairs = <DSIWordPair>[];
   for (var i = 0; i < 20; i++) {
@@ -13,8 +16,6 @@ void initWordPairs() {
   }
   wordPairs.sort();
 }
-
-List<DSIWordPair> wordPairs;
 
 String capitalize(String s) {
   return '${s[0].toUpperCase()}${s.substring(1)}';
@@ -136,6 +137,8 @@ class _WordPairListPageState extends State<WordPairListPage> {
   void initState() {
     super.initState();
     wordPairs.sort();
+    searchList = wordPairs;
+    searchList.sort();
   }
 
   Iterable<DSIWordPair> get items {
@@ -167,22 +170,40 @@ class _WordPairListPageState extends State<WordPairListPage> {
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-      padding: const EdgeInsets.all(16),
-      itemCount: items.length * 2,
-      itemBuilder: (BuildContext _context, int i) {
-        if (i.isOdd) {
-          return Divider();
-        }
-        final int index = i ~/ 2;
-        return _buildRow(context, index + 1, items.elementAt(index));
-      },
-    );
+    return Column(children: <Widget>[
+      TextField(
+        decoration: InputDecoration(
+            prefixIcon: Icon(Icons.search),
+            contentPadding: EdgeInsets.all(16),
+            hintText: 'Type a word'),
+        onChanged: (string) {
+          setState(() {
+            searchList = string.isEmpty
+                ? items
+                : items
+                    .where((element) => element.toString().contains(string))
+                    .toList();
+          });
+        },
+      ),
+      Expanded(
+          child: ListView.builder(
+              padding: const EdgeInsets.all(16),
+              itemCount: searchList.length * 2,
+              itemBuilder: (BuildContext _context, int i) {
+                if (i.isOdd) {
+                  return Divider();
+                }
+                final int index = i ~/ 2;
+                return _buildRow(
+                    context, index + 1, searchList.elementAt(index));
+              }))
+    ]);
   }
 
   Widget _buildRow(BuildContext context, int index, DSIWordPair wordPair) {
     return Dismissible(
-      key: Key(items.toString()),
+      key: Key(wordPair.toString()),
       background: Container(
           color: Colors.red,
           padding: EdgeInsets.all(16),
@@ -198,7 +219,9 @@ class _WordPairListPageState extends State<WordPairListPage> {
       direction: DismissDirection.startToEnd,
       onDismissed: (direction) {
         setState(() {
-          _removeWordPair(items.elementAt(index));
+          searchList.remove(wordPair);
+          wordPairs.remove(wordPair);
+          wordPairs.add(DSIWordPair());
         });
       },
       confirmDismiss: (DismissDirection direction) async {
@@ -235,11 +258,6 @@ class _WordPairListPageState extends State<WordPairListPage> {
   _updateWordPair(BuildContext context, DSIWordPair wordPair) {
     Navigator.pushNamed(context, WordPairUpdatePage.routeName,
         arguments: wordPair);
-  }
-
-  void _removeWordPair(DSIWordPair wordPair) {
-    wordPairs.remove(wordPair);
-    wordPairs.add(DSIWordPair());
   }
 }
 
