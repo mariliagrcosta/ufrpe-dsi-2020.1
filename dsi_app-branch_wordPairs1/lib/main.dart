@@ -1,51 +1,89 @@
 import 'package:english_words/english_words.dart';
 import 'package:flutter/material.dart';
 
-Map<WordPair, bool> wordPairs;
-
 void main() {
   initWordPairs();
   runApp(DSIApp());
 }
 
 void initWordPairs() {
-  final generatedWordPairs = generateWordPairs().take(20);
-  wordPairs =
-      Map.fromIterable(generatedWordPairs, key: (e) => e, value: (e) => null);
+  wordPairs = <DSIWordPair>[];
+  for (var i = 0; i < 20; i++) {
+    wordPairs.add(DSIWordPair());
+  }
+  wordPairs.sort();
 }
 
-///App baseado no tutorial do Flutter disponível em:
-///https://codelabs.developers.google.com/codelabs/first-flutter-app-pt1
+List<DSIWordPair> wordPairs;
+
+String capitalize(String s) {
+  return '${s[0].toUpperCase()}${s.substring(1)}';
+}
+
+class DSIWordPair extends Comparable<DSIWordPair> {
+  String first;
+  String second;
+  bool favourite;
+  DSIWordPair() {
+    WordPair wordPair = WordPair.random();
+    this.first = capitalize(wordPair.first);
+    this.second = capitalize(wordPair.second);
+  }
+
+  @override
+  String toString() {
+    return '${this.first}${this.second}';
+  }
+
+  @override
+  int compareTo(DSIWordPair that) {
+    int result = this.first.toLowerCase().compareTo(that.first.toLowerCase());
+    if (result == 0) {
+      result = this.first.toLowerCase().compareTo(that.first.toLowerCase());
+    }
+    return result;
+  }
+}
+
 class DSIApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'App de Listagem - DSI/BSI/UFRPE',
+      title: 'DSI App (BSI UFRPE)',
       theme: ThemeData(
         primarySwatch: Colors.green,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       home: HomePage(),
+      initialRoute: HomePage.routeName,
+      routes: _buildRoutes(context),
     );
+  }
+
+  Map<String, WidgetBuilder> _buildRoutes(BuildContext context) {
+    return {
+      WordPairUpdatePage.routeName: (context) => WordPairUpdatePage(),
+    };
   }
 }
 
 class HomePage extends StatefulWidget {
+  static const routeName = '/';
   @override
   _HomePageState createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
-  int pageIndex = 0;
+  int _pageIndex = 0;
   List<Widget> _pages = [
-    RandomWordsListPage(null),
-    RandomWordsListPage(true),
-    RandomWordsListPage(false)
+    WordPairListPage(null),
+    WordPairListPage(true),
+    WordPairListPage(false)
   ];
 
   void _changePage(int value) {
     setState(() {
-      pageIndex = value;
+      _pageIndex = value;
     });
   }
 
@@ -53,24 +91,24 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('App de Listagem - DSI/BSI/UFRPE'),
+        title: Text('DSI App (BSI UFRPE)'),
       ),
-      body: _pages[pageIndex],
+      body: _pages[_pageIndex],
       bottomNavigationBar: BottomNavigationBar(
         onTap: _changePage,
-        currentIndex: pageIndex,
+        currentIndex: _pageIndex,
         items: [
           BottomNavigationBarItem(
             icon: Icon(Icons.home_outlined),
-            label: 'Home',
+            label: 'Palavras',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.thumb_up_outlined),
-            label: 'Liked',
+            label: 'Curti',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.thumb_down_outlined),
-            label: 'Disliked',
+            label: 'Não Curti',
           ),
         ],
       ),
@@ -78,54 +116,53 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
-class RandomWordsListPage extends StatefulWidget {
+class WordPairListPage extends StatefulWidget {
   final bool _filter;
-  RandomWordsListPage(this._filter);
+
+  WordPairListPage(this._filter);
 
   @override
-  _RandomWordsListPageState createState() => _RandomWordsListPageState();
+  _WordPairListPageState createState() => _WordPairListPageState();
 }
 
-///Esta classe é o estado da classe que lista os pares de palavra
-///
-class _RandomWordsListPageState extends State<RandomWordsListPage> {
+class _WordPairListPageState extends State<WordPairListPage> {
   final _icons = {
     null: Icon(Icons.thumbs_up_down_outlined),
     true: Icon(Icons.thumb_up, color: Colors.blue),
     false: Icon(Icons.thumb_down, color: Colors.red),
   };
 
-  Iterable<WordPair> get items {
-    if (widget._filter == null) {
-      return wordPairs.keys;
-    } else {
-      //a linah aabaixo retorna os pares filtras opelo filtro
-      return wordPairs.entries
-          .where((element) => element.value == widget._filter)
-          .map((e) => e.key);
-    }
+  @override
+  void initState() {
+    super.initState();
+    wordPairs.sort();
   }
 
-  _toggle(WordPair wordPair) {
-    bool like = wordPairs[wordPair];
-    if (widget._filter != null) {
-      wordPairs[wordPair] = null;
-    } else if (like == null) {
-      wordPairs[wordPair] = true;
-    } else if (like == true) {
-      wordPairs[wordPair] = false;
+  Iterable<DSIWordPair> get items {
+    List<DSIWordPair> result;
+    if (widget._filter == null) {
+      result = wordPairs;
     } else {
-      wordPairs[wordPair] = null;
+      result = wordPairs
+          .where((element) => element.favourite == widget._filter)
+          .toList();
+    }
+
+    return result;
+  }
+
+  _toggleFavourite(DSIWordPair wordPair) {
+    bool like = wordPair.favourite;
+    if (widget._filter != null) {
+      wordPair.favourite = null;
+    } else if (like == null) {
+      wordPair.favourite = true;
+    } else if (like == true) {
+      wordPair.favourite = false;
+    } else {
+      wordPair.favourite = null;
     }
     setState(() {});
-  }
-
-  String capitalize(String s) {
-    return '${s[0].toUpperCase()}${s.substring(1)}';
-  }
-
-  String asString(WordPair wordPair) {
-    return '${capitalize(wordPair.first)} ${capitalize(wordPair.second)}';
   }
 
   @override
@@ -139,36 +176,138 @@ class _RandomWordsListPageState extends State<RandomWordsListPage> {
         }
         final int index = i ~/ 2;
         return Dismissible(
-          child: _buildRow(index + 1, items.elementAt(index)),
+          child: _buildRow(context, index + 1, items.elementAt(index)),
           key: Key(items.toString()),
           background: Container(
             color: Colors.red,
           ),
           onDismissed: (direction) {
             setState(() {
-              _removeWordPair(index, items.elementAt(index));
+              _removeWordPair(items.elementAt(index));
             });
+          },
+          confirmDismiss: (DismissDirection direction) async {
+            return await showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: const Text("Confirmação"),
+                  content:
+                      const Text("Tem certeza que deseja deletar esse item?"),
+                  actions: <Widget>[
+                    TextButton(
+                        onPressed: () => Navigator.of(context).pop(true),
+                        child: const Text("Sim")),
+                    TextButton(
+                      onPressed: () => Navigator.of(context).pop(false),
+                      child: const Text("Não"),
+                    ),
+                  ],
+                );
+              },
+            );
           },
         );
       },
     );
   }
 
-  Widget _buildRow(int index, WordPair wordPair) {
+  Widget _buildRow(BuildContext context, int index, DSIWordPair wordPair) {
     return ListTile(
-      title: Text('$index. ${asString(wordPair)}'),
-      trailing: IconButton(
-        icon: _icons[wordPairs[wordPair]],
-        onPressed: () => _toggle(wordPair),
+      title: Text('$index. ${(wordPair)}'),
+      trailing: TextButton(
+        onPressed: () => _toggleFavourite(wordPair),
+        child: _icons[wordPair.favourite],
+      ),
+      onTap: () => _updateWordPair(context, wordPair),
+    );
+  }
+
+  _updateWordPair(BuildContext context, DSIWordPair wordPair) {
+    Navigator.pushNamed(context, WordPairUpdatePage.routeName,
+        arguments: wordPair);
+  }
+
+  void _removeWordPair(DSIWordPair wordPair) {
+    wordPairs.remove(wordPair);
+    wordPairs.add(DSIWordPair());
+  }
+}
+
+class WordPairUpdatePage extends StatefulWidget {
+  static const routeName = '/wordpair/update';
+
+  WordPairUpdatePage();
+
+  @override
+  _WordPairUpdatePageState createState() => _WordPairUpdatePageState();
+}
+
+class _WordPairUpdatePageState extends State<WordPairUpdatePage> {
+  final _formKey = GlobalKey<FormState>();
+  DSIWordPair _wordPair;
+  String _newFirst;
+  String _newSecond;
+
+  @override
+  Widget build(BuildContext context) {
+    _wordPair = ModalRoute.of(context).settings.arguments;
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('DSI App (BSI UFRPE)'),
+      ),
+      body: _buildForm(context),
+    );
+  }
+
+  _buildForm(BuildContext context) {
+    return Form(
+      key: _formKey,
+      child: Wrap(
+        alignment: WrapAlignment.center,
+        runSpacing: 16.0,
+        children: <Widget>[
+          TextFormField(
+            keyboardType: TextInputType.text,
+            decoration: const InputDecoration(labelText: 'Primeira'),
+            validator: (String value) {
+              return value.isEmpty ? 'Palavra inválida' : null;
+            },
+            onSaved: (newValue) => _newFirst = newValue,
+            initialValue: _wordPair.first,
+          ),
+          TextFormField(
+            keyboardType: TextInputType.text,
+            decoration: const InputDecoration(labelText: 'Segunda'),
+            validator: (String value) {
+              return value.isEmpty ? 'Palavra inválida.' : null;
+            },
+            onSaved: (newValue) => _newSecond = newValue,
+            initialValue: _wordPair.second,
+          ),
+          SizedBox(
+            width: double.infinity,
+          ),
+          ElevatedButton(
+            onPressed: () => _save(context),
+            child: Text('Salvar'),
+          ),
+        ],
       ),
     );
   }
 
-  void _removeWordPair(int index, WordPair wordPair) {
-    wordPairs.remove(wordPair);
-    var newWord = generateWordPairs().take(1);
-    Map<WordPair, bool> mapNewWord =
-        Map.fromIterable(newWord, key: (e) => e, value: (e) => null);
-    wordPairs.addAll(mapNewWord);
+  void _save(BuildContext context) {
+    if (!_formKey.currentState.validate()) return;
+    setState(() {
+      _formKey.currentState.save();
+      _updateWordPair();
+    });
+    Navigator.pop(context, HomePage.routeName);
+  }
+
+  void _updateWordPair() {
+    _wordPair.first = _newFirst;
+    _wordPair.second = _newSecond;
   }
 }
