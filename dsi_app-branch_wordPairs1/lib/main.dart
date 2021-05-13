@@ -7,7 +7,6 @@ void main() {
 }
 
 List<DSIWordPair> wordPairs;
-List<DSIWordPair> searchList;
 
 void initWordPairs() {
   wordPairs = <DSIWordPair>[];
@@ -127,6 +126,7 @@ class WordPairListPage extends StatefulWidget {
 }
 
 class _WordPairListPageState extends State<WordPairListPage> {
+  List<DSIWordPair> searchList;
   final _icons = {
     null: Icon(Icons.thumbs_up_down_outlined),
     true: Icon(Icons.thumb_up, color: Colors.blue),
@@ -137,7 +137,7 @@ class _WordPairListPageState extends State<WordPairListPage> {
   void initState() {
     super.initState();
     wordPairs.sort();
-    searchList = wordPairs;
+    searchList = List.from(wordPairs);
     searchList.sort();
   }
 
@@ -182,7 +182,10 @@ class _WordPairListPageState extends State<WordPairListPage> {
               searchList = string.isEmpty
                   ? items
                   : items
-                      .where((element) => element.toString().contains(string))
+                      .where((element) => element
+                          .toString()
+                          .toLowerCase()
+                          .contains(string.toLowerCase()))
                       .toList();
             });
           },
@@ -190,13 +193,13 @@ class _WordPairListPageState extends State<WordPairListPage> {
         Expanded(
           child: ListView.builder(
             padding: const EdgeInsets.all(16),
-            itemCount: items.length * 2,
+            itemCount: searchList.length * 2,
             itemBuilder: (BuildContext context, int i) {
               if (i.isOdd) {
                 return Divider();
               }
               final int index = i ~/ 2;
-              return _buildRow(context, index + 1, items.elementAt(index));
+              return _buildRow(context, index + 1, searchList.elementAt(index));
             },
           ),
         )
@@ -332,6 +335,7 @@ class _WordPairUpdatePageState extends State<WordPairUpdatePage> {
     setState(() {
       _formKey.currentState.save();
       _updateWordPair();
+      HomePage();
     });
     Navigator.pop(context, HomePage.routeName);
   }
