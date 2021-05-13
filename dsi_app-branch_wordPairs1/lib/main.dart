@@ -51,7 +51,7 @@ class DSIApp extends StatelessWidget {
     return MaterialApp(
       title: 'DSI App (BSI UFRPE)',
       theme: ThemeData(
-        primarySwatch: Colors.green,
+        primarySwatch: Colors.purple,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       home: HomePage(),
@@ -112,6 +112,11 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () =>
+            Navigator.pushNamed(context, WordPairUpdatePage.routeName),
+        child: Icon(Icons.add),
+      ),
     );
   }
 }
@@ -129,8 +134,8 @@ class _WordPairListPageState extends State<WordPairListPage> {
   List<DSIWordPair> searchList;
   final _icons = {
     null: Icon(Icons.thumbs_up_down_outlined),
-    true: Icon(Icons.thumb_up, color: Colors.blue),
-    false: Icon(Icons.thumb_down, color: Colors.red),
+    true: Icon(Icons.thumb_up, color: Colors.indigoAccent),
+    false: Icon(Icons.thumb_down, color: Colors.deepOrange),
   };
 
   @override
@@ -285,6 +290,10 @@ class _WordPairUpdatePageState extends State<WordPairUpdatePage> {
   @override
   Widget build(BuildContext context) {
     _wordPair = ModalRoute.of(context).settings.arguments;
+    if (_wordPair == null) {
+      _wordPair = DSIWordPair();
+      wordPairs.add(_wordPair);
+    }
     return Scaffold(
       appBar: AppBar(
         title: Text('DSI App (BSI UFRPE)'),
@@ -336,7 +345,11 @@ class _WordPairUpdatePageState extends State<WordPairUpdatePage> {
       _formKey.currentState.save();
       _updateWordPair();
     });
-    Navigator.pushNamed(context, HomePage.routeName);
+    Navigator.pushNamedAndRemoveUntil(
+      context,
+      HomePage.routeName,
+      (Route<dynamic> route) => false,
+    );
   }
 
   void _updateWordPair() {
