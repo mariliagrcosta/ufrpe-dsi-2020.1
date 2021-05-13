@@ -181,6 +181,7 @@ class _WordPairListPageState extends State<WordPairListPage> {
           background: Container(
             color: Colors.red,
           ),
+          direction: DismissDirection.startToEnd,
           onDismissed: (direction) {
             setState(() {
               _removeWordPair(items.elementAt(index));
