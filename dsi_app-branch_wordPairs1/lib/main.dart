@@ -170,35 +170,38 @@ class _WordPairListPageState extends State<WordPairListPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(children: <Widget>[
-      TextField(
-        decoration: InputDecoration(
-            prefixIcon: Icon(Icons.search),
-            contentPadding: EdgeInsets.all(16),
-            hintText: 'Type a word'),
-        onChanged: (string) {
-          setState(() {
-            searchList = string.isEmpty
-                ? items
-                : items
-                    .where((element) => element.toString().contains(string))
-                    .toList();
-          });
-        },
-      ),
-      Expanded(
+    return Column(
+      children: <Widget>[
+        TextField(
+          decoration: InputDecoration(
+              prefixIcon: Icon(Icons.search),
+              contentPadding: EdgeInsets.all(16),
+              hintText: 'Type a word'),
+          onChanged: (string) {
+            setState(() {
+              searchList = string.isEmpty
+                  ? items
+                  : items
+                      .where((element) => element.toString().contains(string))
+                      .toList();
+            });
+          },
+        ),
+        Expanded(
           child: ListView.builder(
-              padding: const EdgeInsets.all(16),
-              itemCount: searchList.length * 2,
-              itemBuilder: (BuildContext _context, int i) {
-                if (i.isOdd) {
-                  return Divider();
-                }
-                final int index = i ~/ 2;
-                return _buildRow(
-                    context, index + 1, searchList.elementAt(index));
-              }))
-    ]);
+            padding: const EdgeInsets.all(16),
+            itemCount: items.length * 2,
+            itemBuilder: (BuildContext context, int i) {
+              if (i.isOdd) {
+                return Divider();
+              }
+              final int index = i ~/ 2;
+              return _buildRow(context, index + 1, items.elementAt(index));
+            },
+          ),
+        )
+      ],
+    );
   }
 
   Widget _buildRow(BuildContext context, int index, DSIWordPair wordPair) {
