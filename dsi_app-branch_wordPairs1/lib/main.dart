@@ -175,61 +175,60 @@ class _WordPairListPageState extends State<WordPairListPage> {
           return Divider();
         }
         final int index = i ~/ 2;
-        return Dismissible(
-          child: _buildRow(context, index + 1, items.elementAt(index)),
-          key: Key(items.toString()),
-          background: Container(
-              color: Colors.red,
-              padding: EdgeInsets.all(16),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: <Widget>[
-                  Icon(
-                    Icons.delete,
-                    color: Colors.white,
-                  )
-                ],
-              )),
-          direction: DismissDirection.startToEnd,
-          onDismissed: (direction) {
-            setState(() {
-              _removeWordPair(items.elementAt(index));
-            });
-          },
-          confirmDismiss: (DismissDirection direction) async {
-            return await showDialog(
-              context: context,
-              builder: (BuildContext context) {
-                return AlertDialog(
-                  title: const Text("Confirmação"),
-                  content:
-                      const Text("Tem certeza que deseja deletar esse item?"),
-                  actions: <Widget>[
-                    TextButton(
-                        onPressed: () => Navigator.of(context).pop(true),
-                        child: const Text("Sim")),
-                    TextButton(
-                      onPressed: () => Navigator.of(context).pop(false),
-                      child: const Text("Não"),
-                    ),
-                  ],
-                );
-              },
-            );
-          },
-        );
+        return _buildRow(context, index + 1, items.elementAt(index));
       },
     );
   }
 
   Widget _buildRow(BuildContext context, int index, DSIWordPair wordPair) {
-    return ListTile(
-      title: Text('$index. ${(wordPair)}'),
-      trailing: TextButton(
-        onPressed: () => _toggleFavourite(wordPair),
-        child: _icons[wordPair.favourite],
+    return Dismissible(
+      key: Key(items.toString()),
+      background: Container(
+          color: Colors.red,
+          padding: EdgeInsets.all(16),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              Icon(
+                Icons.delete,
+                color: Colors.white,
+              )
+            ],
+          )),
+      direction: DismissDirection.startToEnd,
+      onDismissed: (direction) {
+        setState(() {
+          _removeWordPair(items.elementAt(index));
+        });
+      },
+      confirmDismiss: (DismissDirection direction) async {
+        return await showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text("Confirmação"),
+              content: const Text("Tem certeza que deseja deletar esse item?"),
+              actions: <Widget>[
+                TextButton(
+                    onPressed: () => Navigator.of(context).pop(true),
+                    child: const Text("Sim")),
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(false),
+                  child: const Text("Não"),
+                ),
+              ],
+            );
+          },
+        );
+      },
+      child: ListTile(
+        title: Text('$index. ${(wordPair)}'),
+        trailing: TextButton(
+          onPressed: () => _toggleFavourite(wordPair),
+          child: _icons[wordPair.favourite],
+        ),
+        onTap: () => _updateWordPair(context, wordPair),
       ),
-      onTap: () => _updateWordPair(context, wordPair),
     );
   }
 
