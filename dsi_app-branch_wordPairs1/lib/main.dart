@@ -62,7 +62,8 @@ class DSIApp extends StatelessWidget {
 
   Map<String, WidgetBuilder> _buildRoutes(BuildContext context) {
     return {
-      WordPairUpdatePage.routeName: (context) => WordPairUpdatePage(),
+      WordPairAddAndUpdatePage.routeName: (context) =>
+          WordPairAddAndUpdatePage(),
     };
   }
 }
@@ -114,7 +115,7 @@ class _HomePageState extends State<HomePage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () =>
-            Navigator.pushNamed(context, WordPairUpdatePage.routeName),
+            Navigator.pushNamed(context, WordPairAddAndUpdatePage.routeName),
         child: Icon(Icons.add),
       ),
     );
@@ -267,21 +268,22 @@ class _WordPairListPageState extends State<WordPairListPage> {
   }
 
   _updateWordPair(BuildContext context, DSIWordPair wordPair) {
-    Navigator.pushNamed(context, WordPairUpdatePage.routeName,
+    Navigator.pushNamed(context, WordPairAddAndUpdatePage.routeName,
         arguments: wordPair);
   }
 }
 
-class WordPairUpdatePage extends StatefulWidget {
+class WordPairAddAndUpdatePage extends StatefulWidget {
   static const routeName = '/wordpair/update';
 
-  WordPairUpdatePage();
+  WordPairAddAndUpdatePage();
 
   @override
-  _WordPairUpdatePageState createState() => _WordPairUpdatePageState();
+  _WordPairAddAndUpdatePageState createState() =>
+      _WordPairAddAndUpdatePageState();
 }
 
-class _WordPairUpdatePageState extends State<WordPairUpdatePage> {
+class _WordPairAddAndUpdatePageState extends State<WordPairAddAndUpdatePage> {
   final _formKey = GlobalKey<FormState>();
   DSIWordPair _wordPair;
   String _newFirst;
