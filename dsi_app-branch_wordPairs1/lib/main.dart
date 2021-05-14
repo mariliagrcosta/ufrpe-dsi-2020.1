@@ -262,12 +262,12 @@ class _WordPairListPageState extends State<WordPairListPage> {
           onPressed: () => _toggleFavourite(wordPair),
           child: _icons[wordPair.favourite],
         ),
-        onTap: () => _updateWordPair(context, wordPair),
+        onTap: () => _addAndUpdateWordPair(context, wordPair),
       ),
     );
   }
 
-  _updateWordPair(BuildContext context, DSIWordPair wordPair) {
+  _addAndUpdateWordPair(BuildContext context, DSIWordPair wordPair) {
     Navigator.pushNamed(context, WordPairAddAndUpdatePage.routeName,
         arguments: wordPair);
   }
@@ -346,7 +346,7 @@ class _WordPairAddAndUpdatePageState extends State<WordPairAddAndUpdatePage> {
     if (!_formKey.currentState.validate()) return;
     setState(() {
       _formKey.currentState.save();
-      _updateWordPair();
+      _addAndUpdateWordPair();
     });
     Navigator.pushNamedAndRemoveUntil(
       context,
@@ -355,7 +355,7 @@ class _WordPairAddAndUpdatePageState extends State<WordPairAddAndUpdatePage> {
     );
   }
 
-  void _updateWordPair() {
+  void _addAndUpdateWordPair() {
     if (isNewWord == true) {
       wordPairs.add(_wordPair);
       isNewWord = false;
