@@ -288,13 +288,14 @@ class _WordPairAddAndUpdatePageState extends State<WordPairAddAndUpdatePage> {
   DSIWordPair _wordPair;
   String _newFirst;
   String _newSecond;
+  bool isNewWord;
 
   @override
   Widget build(BuildContext context) {
     _wordPair = ModalRoute.of(context).settings.arguments;
     if (_wordPair == null) {
       _wordPair = DSIWordPair();
-      wordPairs.add(_wordPair);
+      isNewWord = true;
     }
     return Scaffold(
       appBar: AppBar(
@@ -355,7 +356,12 @@ class _WordPairAddAndUpdatePageState extends State<WordPairAddAndUpdatePage> {
   }
 
   void _updateWordPair() {
-    _wordPair.first = _newFirst;
-    _wordPair.second = _newSecond;
+    if (isNewWord == true) {
+      wordPairs.add(_wordPair);
+      isNewWord = false;
+    } else {
+      _wordPair.first = _newFirst;
+      _wordPair.second = _newSecond;
+    }
   }
 }
