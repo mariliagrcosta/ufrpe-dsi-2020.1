@@ -182,7 +182,7 @@ class _WordPairListPageState extends State<WordPairListPage> {
           decoration: InputDecoration(
               prefixIcon: Icon(Icons.search),
               contentPadding: EdgeInsets.all(16),
-              hintText: 'Type a word'),
+              hintText: 'Search..'),
           onChanged: (string) {
             setState(() {
               searchList = string.isEmpty
