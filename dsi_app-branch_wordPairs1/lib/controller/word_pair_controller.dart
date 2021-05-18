@@ -1,60 +1,54 @@
+import 'dart:async';
 import 'package:dsi_app/model/word_pair_model.dart';
-
-int _nextWordPairId = 1;
-
-List<DSIWordPair> _wordPairs;
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class DSIWordPairController {
+  CollectionReference<Map<String, dynamic>> _wordPairs;
+
   DSIWordPairController() {
     _initWordPairs();
   }
 
   void _initWordPairs() {
-    if (_wordPairs != null) return;
-
-    _wordPairs = <DSIWordPair>[];
-    for (var i = 0; i < 20; i++) {
-      DSIWordPair wordPair = DSIWordPair();
-      wordPair.id = _nextWordPairId++;
-      _wordPairs.add(wordPair);
-    }
-    _wordPairs.sort();
+    _wordPairs = FirebaseFirestore.instance.collection('wordpairs');
   }
 
-  List<DSIWordPair> getAll() {
-    return List.unmodifiable(_wordPairs);
+  DSIWordPair _createWordPair(DocumentSnapshot<Map<String, dynamic>> e) {
+    DSIWordPair result = DSIWordPair.fromJson(e.data());
+    result.id = e.id;
+    return result;
   }
 
-  DSIWordPair getById(int id) {
+  Future<Iterable<DSIWordPair>> getAll() async {
+    QuerySnapshot<Map<String, dynamic>> snapshot = await _wordPairs.get();
+    return snapshot.docs.map((e) => _createWordPair(e));
+  }
+
+  Future<DSIWordPair> getById(String id) async {
     if (id == null) return null;
 
-    for (var wp in _wordPairs) {
-      if (wp.id == id) return wp;
-    }
-    return null;
+    DocumentSnapshot doc = await _wordPairs.doc(id).get();
+    return _createWordPair(doc);
   }
 
-  List<DSIWordPair> getByFilter(bool test(DSIWordPair elemente)) {
-    List<DSIWordPair> result = _wordPairs;
+  Future<Iterable<DSIWordPair>> getByFilter(
+      bool test(DSIWordPair element)) async {
+    Iterable<DSIWordPair> result = await getAll();
     if (test != null) {
-      result = _wordPairs.where(test).toList();
+      result = result.where(test).toList();
     }
     return List.unmodifiable(result);
   }
 
-  void save(DSIWordPair wordPair) {
+  Future save(DSIWordPair wordPair) async {
     if (wordPair.id == null) {
-      wordPair.id = _nextWordPairId++;
+      return _wordPairs.add(wordPair.toJson());
     } else {
-      DSIWordPair oldWordPair = getById(wordPair.id);
-      delete(oldWordPair);
+      return _wordPairs.doc(wordPair.id).update(wordPair.toJson());
     }
-    _wordPairs.add(wordPair);
-    _wordPairs.sort();
   }
 
-  void delete(DSIWordPair wordPair) {
-    _wordPairs.remove(wordPair);
-    _wordPairs.sort();
+  Future delete(DSIWordPair wordPair) {
+    return _wordPairs.doc(wordPair.id).delete();
   }
 }

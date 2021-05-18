@@ -1,7 +1,7 @@
 import 'package:english_words/english_words.dart';
 
 class DSIWordPair extends Comparable<DSIWordPair> {
-  int id;
+  String id;
   String first;
   String second;
   bool favourite;
@@ -29,4 +29,16 @@ class DSIWordPair extends Comparable<DSIWordPair> {
     }
     return result;
   }
+
+  DSIWordPair.fromJson(Map<String, dynamic> json) {
+    if (json == null) return;
+    first = json['first'];
+    second = json['second'];
+    favourite = json['favourite'];
+  }
+  Map<String, dynamic> toJson() => {
+        'first': first,
+        'second': second,
+        'favourite': favourite,
+      };
 }

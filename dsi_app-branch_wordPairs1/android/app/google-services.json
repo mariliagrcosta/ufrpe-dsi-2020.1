@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "95543308748",
+    "project_id": "dsiwordpair-2b8b5",
+    "storage_bucket": "dsiwordpair-2b8b5.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:95543308748:android:c5cc855f4ab30bb435ad69",
+        "android_client_info": {
+          "package_name": "br.ufrpe.bsi.dsi.dsi_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "95543308748-o6pmkl03fj6d9f0nupe55f877v9ppmos.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCcbu_bigASYUH7pdd_y_ivhftpgBiJYmE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "95543308748-o6pmkl03fj6d9f0nupe55f877v9ppmos.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
