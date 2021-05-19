@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:dsi_app/controller/word_pair_controller.dart';
 import 'package:dsi_app/model/word_pair_model.dart';
 
+///Exibe uma mensagem no SnackBar.
 void _showMessage(BuildContext context, String text) {
   final snackBar = SnackBar(
     content: Text(text),
@@ -17,6 +18,7 @@ void _showMessage(BuildContext context, String text) {
   ScaffoldMessenger.of(context).showSnackBar(snackBar);
 }
 
+//Constroi o componente que apresenta o erro no carregamento do Firebase.
 Widget _buildError(context) {
   return Directionality(
     textDirection: TextDirection.ltr,
@@ -33,6 +35,7 @@ Widget _buildError(context) {
   );
 }
 
+///Constrói o componente de load.
 Widget _buildLoading(context) {
   return Directionality(
     textDirection: TextDirection.ltr,
@@ -55,28 +58,39 @@ Widget _buildLoading(context) {
   );
 }
 
+///Página inicial que apresenta o [BottomNavigationBar], onde cada
+///[BottomNavigationBarItem] é uma página do tipo [WordPairListPage].
 class HomePage extends StatefulWidget {
+  ///Nome da rota referente à página Home.
   static const routeName = '/';
 
+  ///Cria o estado da página Home.
   @override
   _HomePageState createState() => _HomePageState();
 }
 
+///O estado equivalente ao [StatefulWidget] [HomePage].
 class _HomePageState extends State<HomePage> {
+  ///A página atual em que o [BottomNavigationBar] se encontra.
   int _pageIndex = 0;
 
+  ///As 3 páginas do [HomePage].
+  ///A primeira apresenta todas as palavras, a segunda apresenta as palavras que
+  ///o usuário gosta e a terceira apresenta as palavras que o usuário não gosta.
   List<Widget> _pages = [
     WordPairListPage(null),
     WordPairListPage(true),
     WordPairListPage(false),
   ];
 
+  ///Método utilizado para alterar a página atual do [HomePage].
   void _changePage(int value) {
     setState(() {
       _pageIndex = value;
     });
   }
 
+  ///Constroi a tela do [HomePage], incluindo um [BottomNavigationBar]
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -112,22 +126,35 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
+///Página que apresenta a listagem de palavras.
 class WordPairListPage extends StatefulWidget {
+  ///Atributo que determina as palavras que serão exibidas na listagem.
   final bool _filter;
+
+  ///Construtor da classe
   WordPairListPage(this._filter);
 
+  ///Método responsável por criar o objeto estado.
   @override
   _WordPairListPageState createState() => _WordPairListPageState();
 }
 
+///Esta classe é o estado da classe [WordPairListPage].
 class _WordPairListPageState extends State<WordPairListPage> {
   final DSIWordPairController _controller = DSIWordPairController();
+
+  ///Map com os ícones utilizados no [BottomNavigationBar].
   final _icons = {
     null: Icon(Icons.thumbs_up_down_outlined),
     true: Icon(Icons.thumb_up, color: Colors.indigoAccent),
     false: Icon(Icons.thumb_down, color: Colors.deepOrange),
   };
 
+  ///Método getter para retornar os itens. Os itens são ordenados utilizando a
+  ///ordenação definida na classe [DSIWordPair].
+  ///
+  ///Dependendo do que está setado no atributo [widget._filter], este método
+  ///retorna todas as palavras, as palavras curtidas ou as palavras não curtidas.
   Future<Iterable<DSIWordPair>> get items {
     FutureOr<Iterable<DSIWordPair>> result;
     if (widget._filter == null) {
@@ -139,6 +166,7 @@ class _WordPairListPageState extends State<WordPairListPage> {
     return result;
   }
 
+  ///Altera o estado de curtida da palavra.
   _toggleFavourite(DSIWordPair wordPair) {
     bool like = wordPair.favourite;
     if (widget._filter != null) {
@@ -158,6 +186,9 @@ class _WordPairListPageState extends State<WordPairListPage> {
     });
   }
 
+  ///Constroi a listagem de itens.
+  ///Note que é dobrada a quantidade de itens, para que a cada índice par, se
+  ///inclua um separador ([Divider]) na listagem.
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
@@ -186,6 +217,7 @@ class _WordPairListPageState extends State<WordPairListPage> {
     );
   }
 
+  ///Constroi uma linha da listagem a partir do par de palavras e do índice.
   Widget _buildRow(BuildContext context, int index, DSIWordPair wordPair) {
     return Dismissible(
       key: Key(wordPair.toString()),
@@ -204,7 +236,12 @@ class _WordPairListPageState extends State<WordPairListPage> {
       direction: DismissDirection.startToEnd,
       onDismissed: (direction) {
         setState(() {
-          _controller.delete(wordPair);
+          _controller.delete(wordPair).then((value) {
+            _showMessage(context, 'A operação foi realizada com sucesso.');
+            setState(() {});
+          }).onError((error, stackTrace) {
+            _showMessage(context, 'A operação não foi realizada.');
+          });
         });
       },
       confirmDismiss: (DismissDirection direction) async {
@@ -238,20 +275,26 @@ class _WordPairListPageState extends State<WordPairListPage> {
     );
   }
 
+  ///Exibe a tela de atualização do par de palavras.
   _updateWordPair(BuildContext context, DSIWordPair wordPair) {
     Navigator.pushNamed(context, WordPairUpdatePage.routeName,
         arguments: wordPair);
   }
 }
 
+///Página que apresenta a tela de atualização do par de palavras.
 class WordPairUpdatePage extends StatefulWidget {
   static const routeName = '/wordpair/update';
+
+  ///Construtor da classe
   WordPairUpdatePage();
 
+  ///Cria o estado da página de atualização de palavras.
   @override
   _WordPairUpdatePageState createState() => _WordPairUpdatePageState();
 }
 
+///Esta classe é o estado da classe que atualiza os pares de palavras.
 class _WordPairUpdatePageState extends State<WordPairUpdatePage> {
   final _formKey = GlobalKey<FormState>();
   DSIWordPairController _controller = DSIWordPairController();
@@ -259,6 +302,7 @@ class _WordPairUpdatePageState extends State<WordPairUpdatePage> {
   String _newFirst;
   String _newSecond;
 
+  ///Método responsável por criar a tela de atualização do par de palavras.
   @override
   Widget build(BuildContext context) {
     _wordPair = ModalRoute.of(context).settings.arguments;
@@ -273,6 +317,7 @@ class _WordPairUpdatePageState extends State<WordPairUpdatePage> {
     );
   }
 
+  ///Método utilizado para criar o corpo da tela de atualização do par de palavras.
   _buildForm(BuildContext context) {
     return Form(
       key: _formKey,
@@ -310,6 +355,7 @@ class _WordPairUpdatePageState extends State<WordPairUpdatePage> {
     );
   }
 
+  ///Método que valida o formulário e salva os dados no par de palavras.
   void _save(BuildContext context) {
     if (!_formKey.currentState.validate()) return;
     setState(() {
@@ -317,6 +363,8 @@ class _WordPairUpdatePageState extends State<WordPairUpdatePage> {
       _updateWordPair();
     });
 
+    //Retorna para a home  e remove o histórico de navegação para evitar a
+    //exibição do botão de 'back' na appbar.
     Navigator.pushNamedAndRemoveUntil(
       context,
       HomePage.routeName,
@@ -324,9 +372,16 @@ class _WordPairUpdatePageState extends State<WordPairUpdatePage> {
     );
   }
 
+  ///Recupera os dados que os campos de texto atualizaram nos atributos da classe
+  ///e atualiza o par de palavras.
   void _updateWordPair() {
     _wordPair.first = _newFirst;
     _wordPair.second = _newSecond;
-    _controller.save(_wordPair);
+    _controller.save(_wordPair).then((value) {
+      _showMessage(context, 'A operação foi realizada com sucesso.');
+      setState(() {});
+    }).onError((error, stackTrace) {
+      _showMessage(context, 'A operação não foi realizada.');
+    });
   }
 }

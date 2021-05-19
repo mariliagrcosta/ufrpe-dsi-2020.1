@@ -8,14 +8,20 @@ void main() {
   runApp(DSIApp());
 }
 
+///Classe principal que representa o App.
+///O uso do widget do tipo Stateful evita a reinicialização do Firebase cada vez
+///que o App é reconstruído.
 class DSIApp extends StatefulWidget {
+  ///Cria o estado do app.
   @override
   _DSIAppState createState() => _DSIAppState();
 }
 
+///O estado do app.
 class _DSIAppState extends State<DSIApp> {
   final Future<FirebaseApp> _initialization = Firebase.initializeApp();
 
+  ///Constrói o App a partir do FutureBuilder, após o carregamento do Firebase.
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
@@ -32,6 +38,7 @@ class _DSIAppState extends State<DSIApp> {
     );
   }
 
+  ///Constroi o componente que apresenta o erro no carregamento do Firebase.
   Widget _buildError(context) {
     return Directionality(
       textDirection: TextDirection.ltr,
@@ -48,6 +55,7 @@ class _DSIAppState extends State<DSIApp> {
     );
   }
 
+  ///Constrói o componente de load.
   Widget _buildLoading(context) {
     return Directionality(
       textDirection: TextDirection.ltr,
@@ -70,6 +78,7 @@ class _DSIAppState extends State<DSIApp> {
     );
   }
 
+  ///Constrói o App e suas configurações.
   Widget _buildApp(BuildContext context) {
     return MaterialApp(
       title: 'DSI App (BSI UFRPE)',
@@ -83,6 +92,7 @@ class _DSIAppState extends State<DSIApp> {
     );
   }
 
+  ///Método utilizado para configurar as rotas.
   Map<String, WidgetBuilder> _buildRoutes(BuildContext context) {
     return {
       WordPairUpdatePage.routeName: (context) => WordPairUpdatePage(),
