@@ -150,9 +150,6 @@ class _WordPairListPageState extends State<WordPairListPage> {
     false: Icon(Icons.thumb_down, color: Colors.deepOrange),
   };
 
-  ///Método getter para retornar os itens. Os itens são ordenados utilizando a
-  ///ordenação definida na classe [DSIWordPair].
-  ///
   ///Dependendo do que está setado no atributo [widget._filter], este método
   ///retorna todas as palavras, as palavras curtidas ou as palavras não curtidas.
   Future<Iterable<DSIWordPair>> get items {
@@ -217,6 +214,8 @@ class _WordPairListPageState extends State<WordPairListPage> {
     );
   }
 
+  ///Implementação do widget Dismissible, o mesmo permite que o usuário exclua
+  ///as palvras arrastando-as para o lado.
   ///Constroi uma linha da listagem a partir do par de palavras e do índice.
   Widget _buildRow(BuildContext context, int index, DSIWordPair wordPair) {
     return Dismissible(
@@ -363,7 +362,7 @@ class _WordPairUpdatePageState extends State<WordPairUpdatePage> {
       _updateWordPair();
     });
 
-    //Retorna para a home  e remove o histórico de navegação para evitar a
+    //Retorna para a home e remove o histórico de navegação para evitar a
     //exibição do botão de 'back' na appbar.
     Navigator.pushNamedAndRemoveUntil(
       context,

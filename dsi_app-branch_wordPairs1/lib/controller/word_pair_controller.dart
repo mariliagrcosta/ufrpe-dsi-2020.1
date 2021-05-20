@@ -16,7 +16,7 @@ class DSIWordPairController {
     _wordPairs = FirebaseFirestore.instance.collection('wordpairs');
   }
 
-  ///Cria um par de palavras a partir do snapshot do documento.\
+  ///Cria um par de palavras a partir do snapshot do documento.
   DSIWordPair _createWordPair(DocumentSnapshot<Map<String, dynamic>> e) {
     DSIWordPair result = DSIWordPair.fromJson(e.data());
     result.id = e.id;
@@ -44,10 +44,10 @@ class DSIWordPairController {
   ///a condição representada pela função passada como parâmetro. Caso a função
   ///passada seja [null], retorna todos os elementos.
   Future<Iterable<DSIWordPair>> getByFilter(
-      bool test(DSIWordPair element)) async {
+      bool rating(DSIWordPair element)) async {
     Iterable<DSIWordPair> result = await getAll();
-    if (test != null) {
-      result = result.where(test).toList();
+    if (rating != null) {
+      result = result.where(rating).toList();
     }
     return List.unmodifiable(result);
   }

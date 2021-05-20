@@ -29,7 +29,7 @@ class DSIWordPair extends Comparable<DSIWordPair> {
   }
 
   ///Este método foi sobrescrito para customizar a conversão de um objeto desta
-  ///calsse para String
+  ///classe para String
   @override
   String toString() {
     return '${this.first} ${this.second}';
